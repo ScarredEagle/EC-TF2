@@ -12,18 +12,42 @@ public class Team {
 
 public boolean onRed(CommandSender sender, Command cmd, String label, String[] args) {
    if (cmd.getName().equalsIgnoreCase("red")) {
-         }
           Player player = (Player)sender;
-          plugin.red.add(sender.getName());
-           player.sendMessage(ChatColor.AQUA + "[Endercraft TF2]" + ChatColor.GREEN + " You have chosen team RED");
-		return true;
+          if(TF2Main.red.size() <= TF2Main.blu.size())
+			{
+				if(!TF2Main.red.contains(sender.getName()))
+				{
+					TF2Main.red.add(sender.getName());
+					return true;
+				}else
+				{
+					player.sendMessage(ChatColor.AQUA + "[Endercraft TF2]" + ChatColor.RED + " You Are Already On This Team");
+				}
+			}else
+			{
+				player.sendMessage(ChatColor.AQUA + "[Endercraft TF2]" + ChatColor.RED + " This Team Has Too Many Players");
+			}
+   			} 
+   return true;
          }
 public boolean onBlu(CommandSender sender, Command cmd, String label, String[] args) {
 	   if (cmd.getName().equalsIgnoreCase("blu")) {
+		   Player player = (Player)sender;
+		   if(TF2Main.blu.size() <= TF2Main.red.size())
+			{
+				if(!TF2Main.blu.contains(sender.getName()))
+				{
+					TF2Main.blu.add(sender.getName());
+					return true;
+				}else
+				{
+					player.sendMessage(ChatColor.AQUA + "[Endercraft TF2]" + ChatColor.RED + " You Are Already On This Team");
+				}
+			}else
+			{
+				player.sendMessage(ChatColor.AQUA + "[Endercraft TF2]" + ChatColor.RED + " This Team Has Too Many Players");
+			}
 	         }
-	          Player player = (Player)sender;
-	          plugin.blu.add(sender.getName());
-	           player.sendMessage(ChatColor.AQUA + "[Endercraft TF2]" + ChatColor.GREEN + " You have chosen team BLU");
 			return true;
 }
 }
