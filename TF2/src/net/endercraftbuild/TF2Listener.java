@@ -3,6 +3,7 @@ package net.endercraftbuild;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +12,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 //Adds hats, teams on block hit, No friendly fire
@@ -122,5 +128,75 @@ public class TF2Listener implements Listener
 				event.setCancelled(true);
 			}
 		}
+	}
+	//Prevent moving items
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onInv(InventoryClickEvent event)
+	{
+		if(event.isCancelled())
+		{
+			return;
+		}
+		if(!TF2.Builders.contains(event.getView().getPlayer().getName()))
+		{
+			event.setCancelled(true);
+			Player player = (Player) event.getView().getPlayer();
+			player.sendMessage(ChatColor.GREEN + "[TF2] You Can't Move Items Within Your Inventory.");
+		}
+	}
+	
+	//Prevent dropping item
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onDrop(PlayerDropItemEvent event)
+	{
+		if(event.isCancelled())
+		{
+			return;
+		}
+		if(!TF2.Builders.contains(event.getPlayer().getName()))
+		{
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(ChatColor.GREEN + "[TF2] You Can't Drop Items.");
+		}
+	}
+	
+	//Prevents dropping items on death
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onDeath(PlayerDeathEvent event)
+	{
+		event.getDrops().clear();
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onLogOut(PlayerQuitEvent event)
+	{
+		event.getPlayer().getInventory().clear();
+		event.getPlayer().getInventory().setHelmet(new ItemStack(Material.AIR));
+		event.getPlayer().getInventory().setChestplate(new ItemStack(Material.AIR));
+		event.getPlayer().getInventory().setLeggings(new ItemStack(Material.AIR));
+		event.getPlayer().getInventory().setBoots(new ItemStack(Material.AIR));
+		if(TF2.Blu.contains(event.getPlayer().getName()))
+		{
+			TF2.Blu.remove(event.getPlayer().getName());
+		}
+		if(TF2.Red.contains(event.getPlayer().getName()))
+		{
+			TF2.Red.remove(event.getPlayer().getName());
+		}
+		Location loc = event.getPlayer().getLocation();
+		World world = event.getPlayer().getWorld();
+		loc.setYaw(50);
+		loc.setPitch(50);
+		loc.setWorld(world);
+		loc.setX(29);
+		loc.setY(67);
+		loc.setZ(259);
+		event.getPlayer().teleport(loc);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void preventLandDestructionOnExplode(EntityExplodeEvent event)
+	{
+		event.blockList().clear();
 	}
 }
